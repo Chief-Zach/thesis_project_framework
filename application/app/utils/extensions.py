@@ -157,11 +157,10 @@ class FormGroup:
 
 
 class FormData:
-    def __init__(self, endpoint, groups: List[FormGroup], method="POST", button_text="Submit", hashing=True):
+    def __init__(self, endpoint, groups: List[FormGroup], method="POST", button_text="Submit"):
         self.endpoint = endpoint
         self.groups = groups
         self.method = method
-        self.hashing = hashing
         self.button_text = button_text
         self._completed_form = None
 
