@@ -16,6 +16,7 @@ from .utils import extensions
 from .utils.page import Page
 from .utils.extensions import generate_user_cookie
 from .config import set_config
+from .utils.parameterization import Parameterization
 from loguru import logger
 import sys
 from .config_models.database import db_config
@@ -30,11 +31,13 @@ class GameClasses:
         self.index = 0
         self.lock = asyncio.Lock()
         self.config = config
+        self.parameterization = Parameterization(config)
 
     async def register_class_route_with_index(self, game_class: Page):
         async with self.lock:
             game_class.set_index(self.index)
-            game_class.set_config(self.config)
+            game_class.set_config(self.config, self.parameterization)
+
             if game_class.is_game:
                 self.config.GAMES[self.index] = game_class
                 self.index += 1

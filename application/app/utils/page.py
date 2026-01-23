@@ -19,6 +19,7 @@ class Page:
 
         self.config = None
         self.llm = None
+        self.parameterization = None
 
         self.string_name = name.lower().replace(' ', '_')
         if filename is None:
@@ -134,13 +135,14 @@ class Page:
     def set_index(self, index):
         self.index = index
 
-    def set_config(self, config):
+    def set_config(self, config, parameterization):
         self.config = config
         if self.config.LLM:
             self.llm: LLMConnector = get_llm(config)
         else:
             self.llm = None
 
+        self.parameterization = parameterization
         self._register_routes()
 
     def set_functions(self, instructions: Union[str, Callable] = None, verify: Callable = None):

@@ -2,14 +2,13 @@ import json
 
 from ..utils.aes_service import aes_service, hashing_service
 from ..config import get_config
-import os
 from typing import List, Dict, Any
 import secrets
 import string
 
 class Parameterization:
-    def __init__(self):
-        self.config = get_config()
+    def __init__(self, config):
+        self.config = config
         self.split_key = self._generate_random_string(15)
 
     def parameterize_flag(self, user_parameter: str, level_parameter: str, *args):
@@ -51,7 +50,3 @@ class Parameterization:
         input_data = json.loads(raw_data[1])
 
         return {"cookie": raw_data[0], "input_data": input_data}
-
-
-
-parameterization = Parameterization()
