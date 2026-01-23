@@ -1,4 +1,5 @@
 import os
+from typing import Union, List
 
 from fastapi import FastAPI
 from fastapi import Request, Response
@@ -13,8 +14,8 @@ from slowapi.errors import RateLimitExceeded
 
 from .utils import extensions
 from .utils.page import Page
-from .config import init, get_config
 from .utils.extensions import generate_user_cookie
+from .config import set_config
 from loguru import logger
 import sys
 from .config_models.database import db_config
@@ -32,65 +33,42 @@ class GameClasses:
 
     async def register_class_route_with_index(self, game_class: Page):
         async with self.lock:
-
             game_class.set_index(self.index)
-            self.config.GAMES[self.index] = game_class
+            game_class.set_config(self.config)
+            if game_class.is_game:
+                self.config.GAMES[self.index] = game_class
+                self.index += 1
             self.app.include_router(game_class.route, prefix=game_class.url_prefix)
-            self.index += 1
 
-@asynccontextmanager
-async def lifespan(app: FastAPI):
-    # Startup
-    if app.state.config.MONGO:
-        await db_config.connect()
+def lifespan_factory(pages):
+    @asynccontextmanager
+    async def lifespan(app: FastAPI):
+        # Startup
+        if app.state.config.MONGO:
+            await db_config.connect()
 
-    logger.remove()
-    logger.add(sys.stdout, format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>", level="INFO", enqueue=True)
-    games = GameClasses(app, app.state.config)
+        logger.remove()
+        logger.add(sys.stdout, format="<green>{time:YYYY-MM-DD HH:mm:ss}</green> | <level>{level: <8}</level> | <cyan>{name}</cyan>:<cyan>{function}</cyan>:<cyan>{line}</cyan> - <level>{message}</level>", level="INFO", enqueue=True)
+        games = GameClasses(app, app.state.config)
 
-    from .routes.how_to_page import not_game_class
-    await games.register_class_route_with_index(not_game_class)
+        from .routes.start import not_game_class
+        await games.register_class_route_with_index(not_game_class)
 
-    from .routes.dashboard import not_game_class
-    await games.register_class_route_with_index(not_game_class)
+        from .routes.dashboard import not_game_class
+        await games.register_class_route_with_index(not_game_class)
 
-    from .routes.leaderboard import not_game_class
-    await games.register_class_route_with_index(not_game_class)
+        from .routes.how_to_page import not_game_class
+        await games.register_class_route_with_index(not_game_class)
 
-    from .routes.start import not_game_class
-    await games.register_class_route_with_index(not_game_class)
+        from .routes.leaderboard import not_game_class
+        await games.register_class_route_with_index(not_game_class)
 
-    from .routes.welcome_game import game_class
-    await games.register_class_route_with_index(game_class)
+        for page in pages:
+            await games.register_class_route_with_index(page)
 
-    from .routes.leaky_header import game_class
-    await games.register_class_route_with_index(game_class)
+        yield
 
-    from .routes.time_hash import game_class
-    await games.register_class_route_with_index(game_class)
-
-    from .routes.time_user_hash import game_class
-    await games.register_class_route_with_index(game_class)
-
-    from .routes.url_exploit import game_class
-    await games.register_class_route_with_index(game_class)
-
-    from .routes.password_potential import game_class
-    await games.register_class_route_with_index(game_class)
-
-    from .routes.hard_hashing import game_class
-    await games.register_class_route_with_index(game_class)
-
-    from .routes.admin_application import game_class
-    await games.register_class_route_with_index(game_class)
-
-    from .routes.cross_site_conundrum import game_class
-    await games.register_class_route_with_index(game_class)
-
-    from .routes.posting_paradox import game_class
-    await games.register_class_route_with_index(game_class)
-
-    yield
+    return lifespan
 
 async def create_cookie_if_missing(request: Request, call_next, config):
     if request.url.path.startswith("/static"):
@@ -131,11 +109,9 @@ async def create_cookie_if_missing(request: Request, call_next, config):
     return response
 
 
-def create_app(is_debug=False):
-    init(is_debug)
-    config = get_config()
-
-    app: FastAPI = FastAPI(lifespan=lifespan)
+def create_app(config, pages: List[Page]):
+    set_config(config)
+    app: FastAPI = FastAPI(lifespan=lifespan_factory(pages))
 
     app.mount("/static", StaticFiles(directory="src/static"), name="static")
     limiter = Limiter(key_func=extensions.get_cookie,

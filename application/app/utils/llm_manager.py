@@ -1,11 +1,9 @@
 from functools import lru_cache
-from ..config import get_config
 from .llm_service import ChatGPTConnector, ClaudeConnector, OllamaConnector
 
 
 @lru_cache(maxsize=1)
-def _create_llm():
-    config = get_config()
+def _create_llm(config):
     llm_type = getattr(config, "LLM", None)
     if not llm_type:
         raise RuntimeError(
@@ -31,5 +29,5 @@ def _create_llm():
     else:
         raise ValueError(f"Unknown LLM type: {llm_type}")
 
-def get_llm():
-    return _create_llm()
+def get_llm(config):
+    return _create_llm(config)

@@ -1,6 +1,0 @@
-This level is a cross site scripting level that requires the user to execute the getFlag() function in the code through
-a vulnerable input form. There are no protections in place for inserting any tags or code so the most simple solution for
-this level is:
-<script>
-getFlag();
-</script>

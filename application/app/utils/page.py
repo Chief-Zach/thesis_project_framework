@@ -6,7 +6,6 @@ from fastapi import Request
 from fastapi.responses import Response, HTMLResponse
 from starlette.responses import JSONResponse
 from ..utils.extensions import templates
-from ..config import get_config
 from ..models.user import User
 from .exceptions import NoSolutionFound
 from .llm_manager import get_llm
@@ -17,16 +16,15 @@ class Page:
     def __init__(self, name: str, instructions: Union[str, Callable] = None,
                  verify: Union[Callable] = None,
                  scripts: Dict[str, str] = None, default_hint: str = None, is_game: bool = True, filename=None):
-        self.config = get_config()
+
+        self.config = None
+        self.llm = None
+
         self.string_name = name.lower().replace(' ', '_')
         if filename is None:
             self.filename = self.string_name
         else:
             self.filename = filename
-        if self.config.LLM:
-            self.llm: LLMConnector = get_llm()
-        else:
-            self.llm = None
 
         self.is_game = is_game
         self.route = APIRouter()
@@ -45,8 +43,6 @@ class Page:
 
         if scripts is not None:
             self.load_scripts(scripts)
-
-        self._register_routes()
 
     def _register_routes(self):
         if self.instructions:
@@ -137,6 +133,15 @@ class Page:
 
     def set_index(self, index):
         self.index = index
+
+    def set_config(self, config):
+        self.config = config
+        if self.config.LLM:
+            self.llm: LLMConnector = get_llm(config)
+        else:
+            self.llm = None
+
+        self._register_routes()
 
     def set_functions(self, instructions: Union[str, Callable] = None, verify: Callable = None):
 

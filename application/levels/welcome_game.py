@@ -1,8 +1,8 @@
 from fastapi import Request
 
-from ..utils.page import Page
+from app.utils.page import Page
 import json
-from ..config import get_config
+from config import get_config
 
 config = get_config()
 
@@ -29,5 +29,5 @@ instructions = ("Welcome user! The password for this game is "
                 "sending web requests programmatically at <a href='https://realpython.com/python-requests/'>"
                 "https://realpython.com/python-requests/</a>")
 
-game_class = Page("Welcome Game", instructions=instructions, verify=verify)
-game = game_class.route
+welcome_game = Page("Welcome Game", instructions=instructions, verify=verify)
+game = welcome_game.route
