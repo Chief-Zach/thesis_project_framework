@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Thesis Project</title>
+    <link href="{{ request.url_for('static',path='styles/bootstrap.min.css') }}" rel="stylesheet"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ request.url_for('static',path='styles/main.css') }}">
+    <script src="{{ request.url_for('static',path='styles/bootstrap.bundle.min.js') }}"></script>
+</head>
+<body>
+
+<div class="container">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <div class="col-md-3 mb-2 mb-md-0"><a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+            <img src="{{ request.url_for('static',path='images/athena_logo.svg') }}" alt="Logo" style="width:150px"/>
+        </a></div>
+        <ul class="nav nav-pills" ID="mainNav">
+            <li class="nav-item"><a href="/" class="nav-link active" aria-current="page">Home</a></li>
+            <li class="nav-item"><a href="/how_to" class="nav-link">How To Play</a></li>
+            <li class="nav-item"><a href="/documentation" class="nav-link">Documentation</a></li>
+            <li class="nav-item"><a href="/start" class="nav-link">Start</a></li>
+        </ul>
+        <div class="col-md-3 text-end">
+            <a href="/dashboard" class="btn btn-outline-primary me-2">Dashboard</a>
+            <a href="/leaderboard" class="btn btn-outline-primary me-2">Leaderboard</a>
+        </div>
+    </header>
+    <div class="container px-4 py-0 my-3">
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="row align-items-center">
+                    <div class="col">
+                        <h1 class="display-5 fw-bold text-body-emphasis">{{ header }}</h1>
+                    </div>
+                    <div class="col-auto text-end">
+                        <button type="button" class="btn btn-primary"
+                                onclick="window.location.href='/dashboard/details'">
+                            Details
+                        </button>
+                    </div>
+                </div>
+
+                {{ table_data|safe }}
+            </div>
+        </div>
+    </div>
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"><a
+            href="https://github.com/Chief-Zach"
+            class="col-md-4 mb-0 text-body-secondary">Chief-Zach</a>
+        <a href="/"
+           class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
+           aria-label="Bootstrap">
+            <img src="{{ request.url_for('static',path='images/athena_logo.svg') }}" alt="Logo" width="115"/>
+        </a>
+        <ul class="nav col-md-4 justify-content-end">
+            <li class="nav-item"><a href="" class="nav-link px-2 text-body-secondary">Home</a></li>
+            <li class="nav-item"><a href="/how_to" class="nav-link px-2 text-body-secondary">How To Play</a></li>
+            <li class="nav-item"><a href="https://github.com/Chief-Zach/thesis_project/wiki"
+                                    class="nav-link px-2 text-body-secondary">Documentation</a></li>
+            <li class="nav-item"><a href="/start" class="nav-link px-2 text-body-secondary">Start</a></li>
+        </ul>
+    </footer>
+
+</div>
+
+<script>
+    const navLinks = document.querySelectorAll('#mainNav .nav-link');
+    const currentPath = window.location.pathname;
+
+    navLinks.forEach(link => {
+        // Remove any existing active classes
+        link.classList.remove('active');
+
+        console.log(link.getAttribute('href'));
+        console.log(currentPath);
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+
+
+</script>
+
+</body>
+</html>

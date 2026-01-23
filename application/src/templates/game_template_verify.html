@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Thesis Project</title>
+    <link href="{{ request.url_for('static',path='styles/bootstrap.min.css') }}" rel="stylesheet"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ request.url_for('static',path='styles/main.css') }}">
+    <script src="{{ request.url_for('static',path='styles/bootstrap.bundle.min.js') }}"></script>
+    <script>{{ pre_scripts|safe }}</script>
+</head>
+<body>
+<div class="container">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <div class="col-md-3 mb-2 mb-md-0"><a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+            <img src="{{ request.url_for('static',path='images/athena_logo.svg') }}" alt="Logo" style="width:150px"/>
+        </a></div>
+        <ul class="nav nav-pills" id="main_nav">
+            <li class="nav-item"><a href="#" class="nav-link disabled" aria-current="page">Home</a></li>
+            <li class="nav-item"><a href="/how_to" class="nav-link disabled">How To Play</a></li>
+            <li class="nav-item"><a href="https://github.com/Chief-Zach/thesis_project/wiki" class="nav-link disabled">Documentation</a>
+            </li>
+            <li class="nav-item"><a href="/start" class="nav-link active">Start</a></li>
+        </ul>
+        <div class="col-md-3 text-end">
+            <a href="/dashboard" class="btn btn-outline-primary me-2">Dashboard</a>
+            <a href="/leaderboard" class="btn btn-outline-primary me-2">Leaderboard</a>
+        </div>
+    </header>
+    <div class="container px-4 py-5 my-5">
+        <div class="row">
+
+            <div class="col-lg-6 text-center">
+                <h1 class="display-5 fw-bold text-body-emphasis">{{ header|safe }}</h1>
+                {{ table|safe }}
+                <p class="lead mb-4"> {{ text|safe }} </p>
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    {{ form_data|safe }}
+                </div>
+                <p class="lead mb-4" id="result"> {{ result_text|safe }} </p>
+                <p class="mb-4"> {{ subtext|safe }} </p>
+                {{ hidden_text|safe }}
+
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    {{ primary_button|safe }}
+                    {{ secondary_button|safe }}
+                </div>
+            </div>
+
+            <div class="col-lg-6 text-center" id="hints_display">
+                <h2 class="fw-semibold">Hints</h2>
+                <p class="mb-3" id="hint_text">&nbsp;</p>
+                <div class="mb-3" id="loadingResponse" style="display: none">
+                    <div class="dots-loading">
+                        <span></span><span></span><span></span>
+                    </div>
+                </div>
+                <button type="button" id="hint" class="btn btn-primary btn-lg px-4 gap-3"> Get Hint</button>
+
+                {{ right_content|safe }}
+            </div>
+        </div>
+    </div>
+    <div class="row text-center justify-content-center">
+        <div class="input-group mb-3">
+            <input type="text" class="form-control" placeholder="Flag" aria-label="Flag"
+                   aria-describedby="submitVerify" id="flagInput">
+            <button type="submit" class="input-group-text" id="flagSubmit">Submit</button>
+        </div>
+        <div id="flagResponse">
+        </div>
+    </div>
+
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"><a
+            href="https://github.com/Chief-Zach"
+            class="col-md-4 mb-0 text-body-secondary">Chief-Zach</a>
+        <a href="/"
+           class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
+           aria-label="Bootstrap">
+            <img src="{{ request.url_for('static',path='images/athena_logo.svg') }}" alt="Logo" width="115"/>
+        </a>
+        <ul class="nav col-md-4 justify-content-end">
+            <li class="nav-item"><a href="/" class="nav-link px-2 text-body-secondary">Home</a></li>
+            <li class="nav-item"><a href="/how_to" class="nav-link px-2 text-body-secondary">How To Play</a></li>
+            <li class="nav-item"><a href="/documentation" class="nav-link px-2 text-body-secondary">Documentation</a>
+            </li>
+            <li class="nav-item"><a href="/start" class="nav-link px-2 text-body-secondary">Start</a></li>
+        </ul>
+    </footer>
+</div>
+</body>
+<script>
+    {{ scripts | safe }}
+</script>
+<script>
+    const url = window.location.origin + window.location.pathname
+
+    document.addEventListener("DOMContentLoaded", () => {
+
+        const hints_display = document.getElementById('hints_display')
+        if (url.indexOf("frontend") === -1) {
+            hints_display.classList.add("hidden")
+        } else hints_display.classList.remove("hidden")
+
+    });
+
+    const flagInput = document.getElementById('flagInput');
+    const flagSubmit = document.getElementById('flagSubmit');
+    const flagResponse = document.getElementById('flagResponse');
+
+    const urlRegex = /(https?:\/\/[^\s]+)/g;
+
+    flagSubmit.addEventListener('click', async (e) => {
+        await submitVerify(e)
+    })
+
+    flagInput.addEventListener("keydown", async function (e) {
+        if (e.key === "Enter") {
+            await submitVerify(e);
+        }
+    });
+
+
+    async function submitVerify(e) {
+        e.preventDefault();
+        const destination = url.match(/https?:\/\/.+\/games\/\w*/i)[0]
+
+        await fetch(destination + "/verify", {
+            method: "POST",
+            body: JSON.stringify({"flag": flagInput.value}),
+            credentials: 'same-origin'
+        })
+        .then(async response => {
+            if (response.status === 429) {
+                const error = new Error(`HTTP error! status: ${response.status}`);
+                error.code = response.status;
+                throw error;
+            }
+            if (response.redirected) {
+                window.location.href = response.url;
+                return;
+            }
+            const result = await response.json();
+            if (result["error"] !== undefined) {
+                flagResponse.innerHTML = `<h5 style="color: red;">${result["error"]}</h5>`
+
+            } else if (response.status !== 200) {
+                flagResponse.innerHTML = `<h5 style="color: red;">${response.status} Error. Please contact an admin</h5>`
+            }
+            else {
+                const wrapUrl = result.replace(urlRegex, (url) => {
+                    return `<a href="${url}">${url}</a>`;
+                });
+
+                flagResponse.innerHTML = `<h5 style="color: limegreen;">${wrapUrl}</h5>`;
+                flagSubmit.disabled = true;
+                flagInput.disabled = true;
+            }
+        })
+        .catch(error => {
+            if (error.code === 429) {
+                flagResponse.innerHTML = `<span style="color: red;">You are requesting too fast. Limit is one per second</span>`;
+                return
+            }
+
+            flagResponse.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+        });
+    }
+
+    const loadingDiv = document.getElementById('loadingResponse');
+    const hint_button = document.getElementById("hint");
+    hint_button.addEventListener("click", () => {
+        loadingDiv.style.display = "block";
+        hint_button.disabled = true;
+        const resultDiv = document.getElementById("hint_text");
+        resultDiv.innerHTML = "Please be patient, loading a hint can take up to 10 seconds"
+
+        if (url.indexOf("frontend") === -1) {
+            resultDiv.innerHTML = "Good try. You can only access hints from the frontend."
+            return
+        }
+        let path = url.replace(/\/(:?frontend$|frontend\/).*$/, "/hint")
+        fetch(path)
+            .then(response => {
+                if (response.status === 429) {
+                    const error = new Error(`HTTP error! status: ${response.status}`);
+                    error.code = response.status;
+                    throw error;
+                }
+                return response.json()
+            })
+            .then(data => {
+                resultDiv.innerText = data.payload;
+                if (data.no_hints) {
+                    resultDiv.appendChild(document.createElement("br"));
+                    resultDiv.appendChild(document.createElement("br"));
+
+                    const note = document.createElement("i");
+                    note.textContent = "You have used all three hints. You got this from here.";
+                    resultDiv.appendChild(note);
+                }
+                loadingDiv.style.display = "none";
+                hint_button.disabled = false;
+            })
+            .catch(error => {
+                if (error.code === 429) {
+                    resultDiv.innerHTML = `<span style="color: red;">You are requesting hints too fast. Limit is one per second</span>`;
+                    loadingDiv.style.display = "none";
+                    hint_button.disabled = false;
+                    return
+                }
+                loadingDiv.style.display = "none";
+                hint_button.disabled = false;
+                resultDiv.innerHTML = `<span style="color: red;">Error: ${error.message}</span>`;
+            });
+    });
+</script>
+</html>

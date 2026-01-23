@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Thesis Project</title>
+    <link href="{{ request.url_for('static',path='styles/bootstrap.min.css') }}" rel="stylesheet"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ request.url_for('static',path='styles/main.css') }}">
+    <script src="{{ request.url_for('static',path='styles/bootstrap.bundle.min.js') }}"></script>
+</head>
+<body>
+
+<div class="modal fade" id="entryCodeModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+     aria-labelledby="entryCodeModal" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="entryCodeModalLabel">Enter the code provided to you by an admin</h1>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="userCode" class="form-label text-start">Code</label>
+                    <input type="text" class="form-control" id="userCode" name="name"
+                           placeholder="Enter Code">
+                </div>
+            </div>
+            <div class="modal-footer align-left">
+                <button type="button" class="btn btn-primary" id="modalSubmit">Submit</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="container">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <div class="col-md-3 mb-2 mb-md-0"><a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+            <img src="{{ request.url_for('static',path='images/athena_logo.svg') }}" alt="Logo" style="width:150px"/>
+        </a></div>
+        <ul class="nav nav-pills" id=mainNav>
+            <li class="nav-item"><a href="/" class="nav-link active">Home</a></li>
+            <li class="nav-item"><a href="/how_to" class="nav-link">How To Play</a></li>
+            <li class="nav-item"><a href="https://github.com/Chief-Zach/thesis_project/wiki" class="nav-link">Documentation</a>
+            </li>
+            <li class="nav-item"><a href="/start" class="nav-link">Start</a></li>
+        </ul>
+        <div class="col-md-3 text-end">
+            <a href="/dashboard" class="btn btn-outline-primary me-2">Dashboard</a>
+            <a href="/leaderboard" class="btn btn-outline-primary me-2">Leaderboard</a>
+        </div>
+    </header>
+
+    <div class="container px-4 py-0 my-2">
+        <div class="row">
+            <div class="col-12 text-center">
+                <h1 class="display-5 fw-bold text-body-emphasis">Welcome</h1>
+            </div>
+        </div>
+    </div>
+
+    <div class="container px-4 py-2 my-5">
+        <div class="row">
+
+            <div class="col-lg-6 text-center">
+                <h2 class="fw-semibold">How To</h2>
+                <button type="button" onclick="location.href='/start'"
+                        class="btn btn-primary btn-lg px-4 my-4 mx-1 gap-3">
+                    Start Now
+                </button>
+
+                <button type="button" onclick="location.href='/how_to'"
+                        class="btn btn-outline-secondary btn-lg px-4 my-4 mx-1 gap-3">
+                    How it works
+                </button>
+
+                <h2 class="fw-semibold">Included Vulnerabilities</h2>
+
+                <div class="list-group d-grid gap-2 border-0 py-2 px-5 mx-5">
+                    <div
+                            class="list-group-item rounded-3 py-3">
+
+                        <a href="https://owasp.org/Top10/A01_2021-Broken_Access_Control/">Broken Access Control</a>
+
+                    </div>
+                </div>
+                <div class="list-group d-grid gap-2 border-0 py-2 px-5 mx-5">
+                    <div
+                            class="list-group-item rounded-3 py-3">
+                        <a href="https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/">Broken
+                            Object Level Authorization</a>
+                    </div>
+                </div>
+                <div class="list-group d-grid gap-2 border-0 py-2 px-5 mx-5">
+                    <div
+                            class="list-group-item rounded-3 py-3">
+                        <a href="https://owasp.org/Top10/A02_2021-Cryptographic_Failures/">Cryptographic Failures</a>
+                    </div>
+                </div>
+                <div class="list-group d-grid gap-2 border-0 py-2 px-5 mx-5">
+                    <div
+                            class="list-group-item rounded-3 py-3">
+                        <a href="https://cwe.mitre.org/data/definitions/288.html">Authentication Bypass</a>
+                        <span class="d-block small opacity-50">Coming Soon!</span>
+                    </div>
+                </div>
+
+            </div>
+
+            <div class="col-lg-6 text-center" id="hints_display">
+                <h2 class="fw-semibold">Recommended Tools</h2>
+
+                <div class="list-group d-grid gap-2 border-0 py-2 px-5 mx-5">
+                    <div
+                            class="list-group-item rounded-3 py-3">
+
+                        <a href="https://www.zaproxy.org/">ZAP</a>
+                        <span class="d-block small opacity-50">Intercepting requests, fuzzing and scanning</span>
+
+                    </div>
+                </div>
+
+                <div class="list-group d-grid gap-2 border-0 py-2 px-5 mx-5">
+                    <div
+                            class="list-group-item rounded-3 py-3">
+
+                        <a href="https://www.zaproxy.org/">BurpSuite</a>
+                        <span class="d-block small opacity-50">Similar to ZAP, free version is missing features</span>
+
+                    </div>
+                </div>
+
+                <div class="list-group d-grid gap-2 border-0 py-2 px-5 mx-5">
+                    <div
+                            class="list-group-item rounded-3 py-3">
+
+                        Python/JS
+                        <span class="d-block small opacity-50">Automating tests, capturing data</span>
+
+                    </div>
+                </div>
+
+                <div class="list-group d-grid gap-2 border-0 py-2 px-5 mx-5">
+                    <div
+                            class="list-group-item rounded-3 py-3">
+
+                        <a href="https://crackstation.net/">CrackStation</a>
+                        <span class="d-block small opacity-50">Online hash database for fast cracking</span>
+
+                    </div>
+                </div>
+                <div class="list-group d-grid gap-2 border-0 py-2 px-5 mx-5">
+                    <div
+                            class="list-group-item rounded-3 py-3">
+
+                        <a href="https://book.hacktricks.wiki/en/pentesting-web/less-code-injection-ssrf.html">
+                            HackTricks</a>
+                        <span class="d-block small opacity-50">Common exploits for a variety of attack surfaces</span>
+
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"><a
+            href="https://github.com/Chief-Zach"
+            class="col-md-4 mb-0 text-body-secondary">Chief-Zach</a>
+        <a href="/"
+           class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
+           aria-label="Bootstrap">
+            <img src="{{ request.url_for('static',path='images/athena_logo.svg') }}" alt="Logo" width="115"/>
+        </a>
+        <ul class="nav col-md-4 justify-content-end">
+            <li class="nav-item"><a href="" class="nav-link px-2 text-body-secondary">Home</a></li>
+            <li class="nav-item"><a href="/how_to" class="nav-link px-2 text-body-secondary">How To Play</a></li>
+            <li class="nav-item"><a href="/documentation" class="nav-link px-2 text-body-secondary">Documentation</a>
+            </li>
+            <li class="nav-item"><a href="/start" class="nav-link px-2 text-body-secondary">Start</a></li>
+        </ul>
+    </footer>
+</div>
+</body>
+<script>
+    const displayModel = {{ launch_modal | lower }}
+    console.log(displayModel)
+    if (displayModel) {
+        const modalElement = document.getElementById('entryCodeModal');
+        const modal = bootstrap.Modal.getOrCreateInstance(modalElement);
+        modal.show();
+    }
+
+    const navLinks = document.querySelectorAll('#mainNav .nav-link');
+    const currentPath = window.location.pathname;
+
+    navLinks.forEach(link => {
+        // Remove any existing active classes
+        link.classList.remove('active');
+
+        console.log(link.getAttribute('href'));
+        console.log(currentPath);
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+
+    const modalSubmitButton = document.getElementById('modalSubmit');
+    const modalInputBox = document.getElementById('userCode');
+    modalSubmitButton.addEventListener('click', async (e) => submitInput(e));
+
+    modalInputBox.addEventListener("keydown", async function (event) {
+        if (event.key === "Enter" && !event.shiftKey) {
+            await submitInput(event);
+        }
+    });
+
+    async function submitInput(e) {
+        e.preventDefault();
+        try {
+            await fetch('/check_code', {
+                method: "POST",
+                body: JSON.stringify({"code": modalInputBox.value})
+            }).then(async (response) => {
+                if (!response.ok) {
+                    const error_text = await response.text()
+                    console.error(error_text);
+                    alert(error_text)
+                }
+                location.reload();
+            });
+
+        } catch (err) {
+            console.error(err);
+            alert(err)
+        }
+    }
+
+</script>
+</html>

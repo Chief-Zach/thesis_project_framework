@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="en" data-bs-theme="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>Thesis Project</title>
+    <link href="{{ request.url_for('static',path='styles/bootstrap.min.css') }}" rel="stylesheet"
+          crossorigin="anonymous">
+    <link rel="stylesheet" href="{{ request.url_for('static',path='styles/main.css') }}">
+    <script src="{{ request.url_for('static',path='styles/bootstrap.bundle.min.js') }}"></script>
+</head>
+<body>
+
+<div class="container">
+    <header class="d-flex flex-wrap align-items-center justify-content-center justify-content-md-between py-3 mb-4 border-bottom">
+        <div class="col-md-3 mb-2 mb-md-0"><a href="/" class="d-inline-flex link-body-emphasis text-decoration-none">
+            <img src="{{ request.url_for('static',path='images/athena_logo.svg') }}" alt="Logo" style="width:150px"/>
+        </a></div>
+    </header>
+
+    <div class="container vh-0">
+        <div class="row vh-0">
+            <div class="col-6 text-center py-3 mb-3 justify-content-center">
+                <h1>Upload</h1>
+                <p class="lead">You can upload your JSON or CSV file here. The file structure should match:
+                    <code><br>{'athenaId': 'assignedId'}<br></code>
+                    or
+                    <br>
+                    <code>"athenaId","randomData"<br>
+                        "second","1"<br>
+                        "third","2"<br>
+                    </code>
+                    for a CSV
+                </p>
+                <form id="uploadForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <input type="file" class="form-control" id="customFile">
+                    </div>
+                    <div class="mb-3">
+                        <button id="uploadButton" type="submit" class="btn btn-primary">Upload</button>
+                    </div>
+
+                    <p id="errorText" style="color: red"></p>
+                </form>
+
+            </div>
+            <div class="col-6 text-center py-3 mb-3 justify-content-center">
+                <h1>Download</h1>
+                <p class="lead">You can download the contents of the database in either CSV or JSON format
+                </p>
+
+                <div class="d-grid gap-2 d-sm-flex justify-content-sm-center">
+                    <button type="button" filetype="csv" id="csvButton"
+                            class="btn btn-outline-danger btn-lg px-4 gap-3 download-btn">CSV
+                    </button>
+                    <button type="button" filetype="json" id="jsonButton"
+                            class="btn btn-outline-primary btn-lg px-4 download-btn">JSON
+                    </button>
+                    <button type="button" filetype="aggregation" id="jsonButton"
+                            class="btn btn-outline-warning btn-lg px-4 download-btn">Aggregation
+                    </button>
+
+                </div>
+
+            </div>
+        </div>
+        {{ data|safe }}
+    </div>
+    <footer class="d-flex flex-wrap justify-content-between align-items-center py-3 my-4 border-top"><a
+            href="https://github.com/Chief-Zach"
+            class="col-md-4 mb-0 text-body-secondary">Chief-Zach</a>
+        <a href="/"
+           class="col-md-4 d-flex align-items-center justify-content-center mb-3 mb-md-0 me-md-auto link-body-emphasis text-decoration-none"
+           aria-label="Bootstrap">
+            <img src="{{ request.url_for('static',path='images/athena_logo.svg') }}" alt="Logo" width="115"/>
+        </a>
+    </footer>
+
+</div>
+<script>
+
+    const uploadButton = document.getElementById("uploadButton");
+
+    document.getElementById("uploadForm").addEventListener("submit", async (e) => {
+        e.preventDefault();
+
+        const fileInput = document.getElementById("customFile");
+        const errorText = document.getElementById("errorText");
+        errorText.textContent = "";
+
+        if (fileInput.files.length === 0) {
+            errorText.textContent = "Please upload a file first";
+            return;
+        }
+
+        const file = fileInput.files[0];
+        const formData = new FormData();
+        formData.append("file", file);
+
+        uploadButton.disabled = true;
+        uploadButton.textContent = "Uploading...";
+
+        try {
+            const response = await fetch('/upload', {
+                method: "POST",
+                body: formData
+            });
+
+            if (!response.ok) {
+                errorText.textContent = "Upload failed";
+            } else {
+                errorText.style.color = "limegreen";
+                errorText.textContent = "Upload successful";
+            }
+        } catch (err) {
+            console.error(err);
+            errorText.textContent = "An error occurred";
+        } finally {
+            uploadButton.disabled = false;
+            uploadButton.textContent = "Upload";
+        }
+    });
+    const downloadButtons = document.querySelectorAll(".download-btn");
+
+    downloadButtons.forEach(button => {
+        button.addEventListener("click", handleDownload)
+    })
+
+    async function handleDownload(e) {
+        e.preventDefault();
+        const filetype = e.target.getAttribute("filetype")
+
+        try {
+            const response = await fetch(`/download?type=${filetype}`);
+            const blob = await response.blob();
+
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `download.${filetype}`;
+            a.click();
+            window.URL.revokeObjectURL(url);
+        } catch (error) {
+            console.error('Download failed:', error);
+        }
+    }
+
+</script>
+
+</body>
+</html>
