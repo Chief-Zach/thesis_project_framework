@@ -88,12 +88,12 @@ class Page:
     def _register_hint(self):
         @self.route.get('/hint', response_class=JSONResponse)
         async def hint(request: Request):
-            user: User = request.state.user
-
             if self.config.LLM and self.config.MONGO:
+                user: User = request.state.user
                 return await self._handle_hint(user, False)
             elif self.default_hint:
                 if self.config.MONGO:
+                    user: User = request.state.user
                     return await self._handle_hint(user, True, self.default_hint)
                 else:
                     return {"payload": self.default_hint}
