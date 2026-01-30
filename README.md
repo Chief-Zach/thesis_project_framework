@@ -7,10 +7,10 @@
 
 <div align="center">
 
-![GitHub issues](https://img.shields.io/github/issues/chief-zach/thesis_project)
-![GitHub license](https://img.shields.io/github/license/chief-zach/thesis_project)
-![GitHub last commit](https://img.shields.io/github/last-commit/chief-zach/thesis_project)
-![GitHub contributors](https://img.shields.io/github/contributors/chief-zach/thesis_project)
+![GitHub issues](https://img.shields.io/github/issues/chief-zach/thesis_project_framework)
+![GitHub license](https://img.shields.io/github/license/chief-zach/thesis_project_framework)
+![GitHub last commit](https://img.shields.io/github/last-commit/chief-zach/thesis_project_framework)
+![GitHub contributors](https://img.shields.io/github/contributors/chief-zach/thesis_project_framework)
 </div>
 
 Athena CTF is an open source tool allowing security researchers, experienced and inexperienced, the ability to create, share, and exploit their own capture the flag web challenges. Through a modular approach, levels can be created with as little as 5 lines of code, using Jinja templating, and a preconfigured FastAPI backend. Including plugins for AI assisted hints based on past submissions. 
