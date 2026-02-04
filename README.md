@@ -101,6 +101,6 @@ async def time_hashing(request: Request):
         return resp
 ```
 For more information visit:
-# [Creating Levels](https://github.com/Chief-Zach/thesis_project/wiki)
+# [Creating Levels](wiki/Home.md)
 
 Helmet vector in logo by <a href="https://github.com/neuicons/neu?ref=svgrepo.com" target="_blank">Neuicons</a> in MIT License via <a href="https://www.svgrepo.com/" target="_blank">SVG Repo</a>
