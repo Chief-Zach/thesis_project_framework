@@ -15,7 +15,8 @@
 
 Athena CTF is an open source tool allowing security researchers, experienced and inexperienced, the ability to create, share, and exploit their own capture the flag web challenges. Through a modular approach, levels can be created with as little as 5 lines of code, using Jinja templating, and a preconfigured FastAPI backend. Including plugins for AI assisted hints based on past submissions. 
 
-<img style="border-radius:15px" src="application/src/static/images/Project_Screenshot.png" alt="Screenshot" />
+<img style="border-radius:15px" src="application/src/static/images/framework.png" alt="Framework screenshot" />
+<img style="border-radius:15px" src="admin/application/src/static/images/admin.png" alt="Admin screenshot" />
 
 ## ✨Features
 
