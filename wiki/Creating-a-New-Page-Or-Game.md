@@ -23,6 +23,10 @@ Allows for the overwriting of URL, LLM, and MONGO, for easy deploying from devel
 - DATABASE_NAME: Name of your database in MongoDB
 - SESSION_SECRET: Used for passing application secrets from frontend to backend
 
+## Creating your level
+Your level must be located in the 'levels' directory that is at the root of the application folder.
+Later in the instructions your will import your levels from this directory.
+
 ### Imports
 The following are all of the FastAPI imports that you should need to operate the application. 
 * Request is the required argument for any route in FastAPI
@@ -140,4 +144,39 @@ async def serve_frontend(request: Request, page_num: str):
     return templates.TemplateResponse(request=request, name=config.TEMPLATE, context=return_object)
 ```
 
-_The bulk of the code for this demonstration is pulled from leaky_header in the routes folder of the Github._
+### Adding your level
+Now that you have created your level, you need to include it in the level group that the framework will present to the user. 
+This is done by editing the 'my_pages.py' file that is located at the root of the application directory.
+
+You must import the Page class of your level into this file. For example:
+
+```python
+from levels.welcome_game import welcome_game
+```
+
+In the 'my_pages' function, you are going to append your import to the my_games_list object. 
+
+```python
+my_games_list.append(welcome_game)
+```
+
+There are comments and examples throughout this file to show you the proper way to import and append.
+
+### Creating solution file
+In order to allow users to access LLM driven hints, you must provide a solution for your level.
+This solution can either be programmatic, or an explanation on how to solve the level. 
+Your solution file must be included in the 'solutions' folder that is at the root of the application folder, and must 
+have an identical name to your level.
+When you first name your level, a replacement operation is performed to turn it into a URL and filesafe string that is 
+used to identify your level throughout. 
+This string will be lowercase with all spaces replaced with underscores and can be found by visiting the level using your 
+browser and looking in the hyperlink.
+You could also print out the game.url_prefix in your code to get a Python printed string of your level name. 
+The extension to this file should be in your SOLUTIONS_EXTENSIONS in your config.py and the order in which these extensions
+appear is the order in which they will be provided to the LLM. 
+For example, if you have .txt and .py in your solution extensions, and you have two solutions for one level, the .txt
+solution will be provided to the LLM as the context, with the .py not being provided. 
+This is so certain file extensions could be provided for certain levels, and others for other difficulties.
+The solution text will be saved into memory for the first call, and is cached for each hint call after that. 
+This solution will also be inserted into the prompt, so ensure that you have the sanitization required, and there are 
+explanations throughout such as comments.  
