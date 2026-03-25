@@ -21,11 +21,25 @@ class AESService:
         self.key = hashing_service.hash(os.getenv("AES_PASSWORD")).digest()
 
     def encrypt(self, data: bytes):
+        """
+        :arg
+        data: Data to encrypt as bytes
+
+        :return:
+        Encrypted data as a string
+        """
         cipher = AES.new(self.key, AES.MODE_SIV)
         ciphertext, tag = cipher.encrypt_and_digest(data)
         return base64.b64encode(tag + ciphertext).decode('utf-8')
 
     def decrypt(self, encrypted_data):
+        """
+        :arg
+        encrypted_data: Encrypted data string from encrypt function
+
+        :return:
+        Decrypted data string
+        """
         raw = base64.b64decode(encrypted_data)
 
         tag = raw[:16]

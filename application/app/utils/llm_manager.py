@@ -30,4 +30,12 @@ def _create_llm(config):
         raise ValueError(f"Unknown LLM type: {llm_type}")
 
 def get_llm(config):
+    """
+    :arg
+    config: The config object
+
+    :return:
+    LLM object based on choices in config
+    """
+
     return _create_llm(config)

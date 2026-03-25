@@ -133,9 +133,25 @@ class Page:
         return {"payload": f"Hint {min(hint_length + 1, 3)}: {hint_data}"}
 
     def set_index(self, index):
+        """
+        :arg
+        index: An integer to describe the order of the levels
+
+        :return:
+        None
+        """
         self.index = index
 
     def set_config(self, config, parameterization):
+        """
+        :arg
+        config: The config object created from the config.py
+        parameterization: The boolean for the parameterization value
+
+        :return:
+        None
+        """
+
         self.config = config
         if self.config.LLM:
             self.llm: LLMConnector = get_llm(config)
@@ -146,6 +162,16 @@ class Page:
         self._register_routes()
 
     def set_functions(self, instructions: Union[str, Callable] = None, verify: Callable = None):
+        """
+        :arg
+        instructions: The instructions functon
+        verify: The verify function
+        :returns
+        None
+
+        Set the register and verify functions after the class has already been initialized. This allows for the access
+        of configuration if they are required for the level setup.
+        """
 
         if instructions is not None:
             self.instructions = instructions
@@ -155,7 +181,15 @@ class Page:
             self._register_verify()
 
     async def success(self, request: Request):
+        """
+        :arg
+        request: The request data from the successful user request
 
+        :returns
+        Success test
+
+        Returns the success text to the user that includes the data for the current level and next level.
+        """
         if self.config.MONGO:
             user: User = await User.get_user(request.state.user.user_cookie)
             await user.complete_level(level=self.name)
@@ -171,6 +205,15 @@ class Page:
                 f"now. Thank you so much for playing!")
 
     def load_scripts(self, scripts: Dict[str, str]):
+        """
+        :arg
+        scripts: A dictionary of scripts to save in system memory
+        :returns
+        None
+
+        Load the inline Javascript scripts into the Page object for later use. Will load these scripts into memory for
+        fast retrival.
+        """
         for script in scripts:
             try:
                 with open(f"app/scripts/{scripts[script]}") as f:
@@ -180,6 +223,15 @@ class Page:
                 raise FileNotFoundError(f"There is no file by the name {scripts[script]}")
 
     def get_scripts(self, script_names: List[str]):
+        """
+        :arg
+        script_names: Retrieve scripts from memory after loading them with load_scripts
+
+        :returns
+        Scripts ready for addition to the "scripts" context in the FastAPI return
+
+        Get the scripts from in memory for use in response to user and combine them for valid use in levels
+        """
         script_data = ""
         for script in script_names:
             script_text = self.scripts.get(script, None)

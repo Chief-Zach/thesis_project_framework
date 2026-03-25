@@ -12,6 +12,15 @@ class Parameterization:
         self.split_key = self._generate_random_string(15)
 
     def parameterize_flag(self, user_parameter: str, level_parameter: str, *args):
+        """
+        :arg
+        user_parameter: Users cookie in the form of a string
+        level_parameter: The unique level code provided by the framework
+        *args: Any other string or byte types to provide more randomness to the flag
+        --
+        :returns
+        Custom user flag string
+        """
         if not self.config.PARAMETERIZE:
             return hashing_service.hash(level_parameter).hexdigest()
 
@@ -35,12 +44,32 @@ class Parameterization:
         return ''.join(secrets.choice(string.ascii_letters + string.digits) for _ in range(length))
 
     def parameterize_with_data(self, user_cookie, data: Dict[str, Any]):
+        """
+        :arg
+        user_cookie: Users cookie in the form of a string
+        data: The data to encrypt in the form of a dictionary
+        --
+        :returns
+        AES encrypted string
+        """
 
         padded_page = self._generate_random_string(12) + user_cookie + self.split_key + json.dumps(data) + self._generate_random_string(14)
 
         return aes_service.encrypt(padded_page.encode())
 
     def get_data_from_parameterization(self, encrypted_string: str):
+        """
+        :arg
+        encrypted_string: The AES encrypted string from the parameterize_with_data function
+        --
+        :returns
+        Dictionary with the following structure:
+        {
+            cookie: User cookie that parameterized data
+            input_data: The data dictionary that was encrypted
+        }
+        """
+
         decrypted = aes_service.decrypt(encrypted_string)
 
         stripped = decrypted[12:-14]
