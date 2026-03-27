@@ -118,7 +118,7 @@ def create_app(config, pages: List[Page]):
 
     app.mount("/static", StaticFiles(directory="src/static"), name="static")
     limiter = Limiter(key_func=extensions.get_cookie,
-                      default_limits=["2/second", "60/minute"])
+                      default_limits=[])
 
     app.state.limiter = limiter
     config.LIMITER = limiter

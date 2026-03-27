@@ -1,0 +1,4 @@
+You found the secret file! 
+Pretend it was sensitive data like user credentials or financial information. 
+In a real application, this could be a file containing secrets that should not be publicly accessible. 
+The fact that you can access it through path traversal indicates a security vulnerability in the application.
