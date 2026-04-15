@@ -5,7 +5,7 @@ from typing import Optional, Dict, List, Union, Any
 import pymongo
 from pymongo import IndexModel
 from beanie import Document
-from pydantic import Field, BaseModel
+from pydantic import Field, BaseModel, ConfigDict
 from fastapi import Request
 from ..utils import exceptions
 
@@ -30,6 +30,7 @@ class Level(BaseModel):
     completed: bool = Field(False, description="Level completion")
 
 class User(Document):
+    model_config = ConfigDict(extra="allow")
 
     user_cookie: str = Field(..., description="Cookie the user is provided when creating account")
     user_ip: Optional[str] = Field(None, description="IP for security")
@@ -140,6 +141,10 @@ class User(Document):
         return new_user
 
     async def is_complete(self, level):
+        from app.utils.page import Page
+        if isinstance(level, Page):
+            level = level.name
+
         level_obj = self.level_data.get(level, None)
         if level_obj is None:
             return False
