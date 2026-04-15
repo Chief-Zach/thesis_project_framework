@@ -11,10 +11,11 @@ from .exceptions import NoSolutionFound
 from .llm_manager import get_llm
 from .llm_service import LLMConnector
 import secrets
+from json import JSONDecodeError
 
 class Page:
     def __init__(self, name: str, instructions: Union[str, Callable] = None,
-                 verify: Union[Callable] = None,
+                 verify: Union[str, Callable] = None,
                  scripts: Dict[str, str] = None, default_hint: str = None, is_game: bool = True, filename=None):
 
         self.config = None
@@ -73,6 +74,19 @@ class Page:
                 if not await user.is_complete(level=self.name):
                     await user.upsert_request_user(level=self.name, request=request)  # Do not insert if the user
                     # has already won
+            if isinstance(self.verify, str):
+                try:
+                    data = await request.json()
+
+                    submitted_flag = data.get("flag", None)
+
+                    if self.verify == submitted_flag:
+                        return await self.success(request)
+                    else:
+                        return self._generate_errors({"code": 403, "text": "Unauthorized"})
+
+                except (JSONDecodeError, KeyError):
+                    return self._generate_errors({"code": 403, "text": "Unauthorized"})
 
             if asyncio.iscoroutinefunction(self.verify):
                 verify_response = await self.verify(request)
@@ -161,7 +175,7 @@ class Page:
         self.parameterization = parameterization
         self._register_routes()
 
-    def set_functions(self, instructions: Union[str, Callable] = None, verify: Callable = None):
+    def set_functions(self, instructions: Union[str, Callable] = None, verify: Union[str, Callable] = None):
         """
         :arg
         instructions: The instructions functon
