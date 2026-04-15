@@ -15,6 +15,10 @@ class DatabaseConfig:
     def __init__(self):
         self.connection_string = os.getenv('MONGODB_URI')
         self.database_name = os.getenv('DATABASE_NAME')
+        self.skip_indexes = os.getenv('SKIP_INDEXES')
+
+        if self.skip_indexes is None or self.skip_indexes == "False":
+            self.skip_indexes = False
 
         self.client: Optional[AsyncMongoClient] = None
         self.db = None
@@ -29,7 +33,7 @@ class DatabaseConfig:
             await self.client.admin.command('ping')
             logger.info(f"Connected to MongoDB database: {self.database_name}")
 
-            if await initialize_models.init_database(self.db):
+            if await initialize_models.init_database(self.db, self.skip_indexes):
                 logger.info("Successfully initialized models")
 
             else:

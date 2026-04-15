@@ -41,7 +41,7 @@ class DebugConfig(object):
     else:
         TEMPLATE: str = "game_template.html"
 
-    GAMES: dict = dict()
+    GAMES: dict = {}
 
     BASE_DIR: Path = Path(__file__).resolve().parent
 
