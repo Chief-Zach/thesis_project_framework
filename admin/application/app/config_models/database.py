@@ -17,7 +17,9 @@ class DatabaseConfig:
         self.database_name = os.getenv('DATABASE_NAME')
         self.skip_indexes = os.getenv('SKIP_INDEXES')
 
-        if self.skip_indexes is None or self.skip_indexes == "False":
+        if self.skip_indexes == "True":
+            self.skip_indexes = True
+        else:
             self.skip_indexes = False
 
         self.client: Optional[AsyncMongoClient] = None
