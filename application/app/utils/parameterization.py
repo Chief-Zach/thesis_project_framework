@@ -1,8 +1,7 @@
 import json
-
-from ..utils.aes_service import aes_service, hashing_service
-from ..config import get_config
-from typing import List, Dict, Any
+from app.utils.aes_service import aes_service
+from app.utils.hashing import hashing_service
+from typing import Dict, Any
 import secrets
 import string
 
@@ -53,8 +52,7 @@ class Parameterization:
         AES encrypted string
         """
 
-        padded_page = self._generate_random_string(12) + user_cookie + self.split_key + json.dumps(data) + self._generate_random_string(14)
-
+        padded_page = self._generate_random_string(4) + user_cookie + self.split_key + json.dumps(data) + self._generate_random_string(6)
         return aes_service.encrypt(padded_page.encode())
 
     def get_data_from_parameterization(self, encrypted_string: str):
@@ -72,7 +70,7 @@ class Parameterization:
 
         decrypted = aes_service.decrypt(encrypted_string)
 
-        stripped = decrypted[12:-14]
+        stripped = decrypted[4:-6]
 
         raw_data = stripped.split(self.split_key)
 

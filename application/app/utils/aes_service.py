@@ -1,30 +1,21 @@
-from Crypto.Cipher import AES
-from Crypto.Hash import SHA256
-import os
+import secrets
 
-from Crypto.Hash.SHA256 import SHA256Hash
+from Crypto.Cipher import AES
+import os
 from dotenv import load_dotenv
 import base64
+from app.utils.hashing import hashing_service
 
 load_dotenv()
 
-class SHA256Service:
-    def __init__(self):
-        self.hashing = SHA256.new()
-    def hash(self, data: str) -> SHA256Hash:
-        """
-        :arg
-        data: String data to hash
-        :return:
-        Bytes of hashed data. Must be hex digested to turn into a string
-        """
-        return self.hashing.new(data.encode())
-
-hashing_service = SHA256Service()
 
 class AESService:
     def __init__(self):
-        self.key = hashing_service.hash(os.getenv("AES_PASSWORD")).digest()
+        password = os.getenv("AES_PASSWORD")
+        if password is not None:
+            self.key = hashing_service.hash(os.getenv("AES_PASSWORD")).digest()
+        else:
+            self.key = hashing_service.hash(secrets.token_hex(32)).digest()
 
     def encrypt(self, data: bytes):
         """

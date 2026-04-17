@@ -1,8 +1,8 @@
 from .page import Page
 
-class Pages_Object:
+class PagesObject:
     def __init__(self):
-        self.pages = list()
+        self.pages = []
 
     def append(self, page: Page):
         self.pages.append(page)

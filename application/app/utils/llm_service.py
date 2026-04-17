@@ -15,7 +15,7 @@ load_dotenv()
 
 class LLMConnector(ABC):
     def __init__(self) -> None:
-        self.client: Union[AsyncAnthropic, AsyncOpenAI]
+        self.client: Union[AsyncAnthropic, AsyncOpenAI, Client]
 
     @abstractmethod
     async def get_hint(self, prompt, past_queries: Union[List[str], None]) -> str:
